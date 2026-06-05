@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - AI Acne Detection</title>
+    <!-- Modern Font: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/auth.js"></script>
+    <style>
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-8);
+            flex: 1;
+        }
+
+        .about-section {
+            background: var(--medical-white);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-lg);
+            padding: var(--space-12);
+            margin-bottom: var(--space-8);
+        }
+
+        .about-section h1 {
+            font-family: var(--font-secondary);
+            font-size: var(--text-4xl);
+            font-weight: 700;
+            color: var(--medical-gray-800);
+            margin-bottom: var(--space-6);
+            text-align: center;
+        }
+
+        .about-section p {
+            font-size: var(--text-lg);
+            line-height: 1.8;
+            color: var(--medical-gray-600);
+            margin-bottom: var(--space-8);
+            text-align: center;
+        }
+
+        .mission-statement {
+            background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
+            border-left: 4px solid var(--medical-primary);
+            padding: var(--space-8);
+            border-radius: var(--radius-lg);
+            margin: var(--space-8) 0;
+        }
+
+        .mission-statement h2 {
+            font-family: var(--font-secondary);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--medical-gray-800);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .mission-statement p {
+            font-size: var(--text-lg);
+            line-height: 1.8;
+            color: var(--medical-gray-600);
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        .about-card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-6);
+            margin-top: var(--space-8);
+        }
+
+        .about-card {
+            background: var(--medical-white);
+            border: 1px solid var(--medical-gray-200);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .about-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--medical-primary);
+        }
+
+        .about-card h3 {
+            font-family: var(--font-secondary);
+            font-size: var(--text-xl);
+            font-weight: 600;
+            color: var(--medical-primary);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .about-card p {
+            font-size: var(--text-base);
+            line-height: 1.7;
+            color: var(--medical-gray-600);
+            margin-bottom: 0;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">🩺 AI Acne Detection</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/upload">Upload</a>
+            <a href="/about">About</a>
+            <a href="/login">Login</a>
+            <a href="/signup">Sign Up</a>
+        </nav>
+    </header>
+
+    <div class="about-container">
+        <section class="about-section">
+            <h1>About Our Project</h1>
+            <p>
+                Welcome to the AI Acne Detection System! This is a simple project built to detect and classify different types of acne from uploaded images using basic Artificial Intelligence.
+            </p>
+
+            <div class="mission-statement">
+                <h2>🎯 Our Goal</h2>
+                <p>
+                    Our goal is to build an easy-to-use website where users can upload a picture of their skin and get a quick prediction of what kind of acne it might be, using a trained AI model.
+                </p>
+            </div>
+
+            <div class="about-card-container">
+                <div class="about-card">
+                    <h3>🧠 How It Works</h3>
+                    <p>
+                        We use a machine learning model to look at images and recognize patterns. The model has been trained on pictures of common skin conditions like whiteheads and blackheads.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <h3>🔍 Quick Results</h3>
+                    <p>
+                        Just upload a photo, and the system will process it instantly. It will try to guess the type of acne and show you its prediction right on the screen.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <h3>🛡️ Safe & Simple</h3>
+                    <p>
+                        This is a simple student project. Whatever images you upload are only processed to show you the result and aren't saved anywhere permanently.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <h3>👨‍⚕️ Disclaimer</h3>
+                    <p>
+                        Remember, this is just a basic project! It is not a real doctor. If you have serious skin concerns, you should always consult a real dermatologist.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2026 AI Acne Detection System</p>
+        <p class="disclaimer">
+            This system is a decision-support tool and does not replace medical consultation.
+        </p>
+    </footer>
+
+</body>
+
+</html>

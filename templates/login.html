@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DermaAI Professional Acne Detection</title>
+    
+    <!-- Medical Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Medical Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Medical Meta Tags -->
+    <meta name="description" content="Professional AI-powered acne detection and classification system for dermatology clinics and medical professionals.">
+    <meta name="keywords" content="dermatology, acne detection, medical AI, skin analysis, clinical dermatology">
+</head>
+
+<body class="medical-dashboard-page">
+
+    <!-- Medical Header -->
+    <header class="medical-header">
+        <div class="medical-header-container">
+            <a href="/" class="medical-logo">
+                <div class="medical-logo-icon">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <span>DermaAI</span>
+            </a>
+            
+            <nav class="medical-nav">
+                <a href="/" class="medical-nav-link">Home</a>
+                <a href="/upload" class="medical-nav-link">Analysis</a>
+                <a href="/about" class="medical-nav-link">About</a>
+                <a href="/login" class="medical-nav-link active">Login</a>
+                <a href="/signup" class="medical-nav-link">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="medical-login-section">
+        <div class="medical-login-container">
+            <div class="medical-login-card">
+                <div class="medical-login-header">
+                    <div class="medical-login-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h2>Professional Login</h2>
+                    <p>Access your DermaAI account to continue</p>
+                </div>
+                
+                <form id="loginForm" class="medical-login-form">
+                    <div class="medical-form-group">
+                        <label for="username">Username</label>
+                        <div class="medical-input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                            <span class="medical-input-border"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="medical-form-group">
+                        <label for="password">Password</label>
+                        <div class="medical-input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                            <span class="medical-input-border"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="medical-form-options">
+                        <label class="medical-checkbox-label">
+                            <input type="checkbox" id="rememberMe" name="rememberMe">
+                            <span class="medical-checkbox-custom"></span>
+                            Remember me
+                        </label>
+                        <a href="/forgot-password" class="medical-link">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="medical-btn medical-btn-primary medical-btn-full">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login to Dashboard</span>
+                    </button>
+                </form>
+                
+                <div class="medical-login-divider">
+                    <span>OR</span>
+                </div>
+                
+                <div class="medical-login-social">
+                    <button type="button" class="medical-btn medical-btn-secondary medical-btn-full">
+                        <i class="fab fa-google"></i>
+                        <span>Continue with Google</span>
+                    </button>
+                </div>
+                
+                <div class="medical-login-footer">
+                    <p>Don't have an account? <a href="/signup" class="medical-link">Create professional account</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="medical-loading-overlay" class="medical-loading-overlay">
+        <div class="medical-loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Authenticating...</span>
+        </div>
+    </div>
+
+    <div id="medical-notification" class="medical-notification"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const loadingOverlay = document.getElementById('medical-loading-overlay');
+            const notification = document.getElementById('medical-notification');
+            
+            // Form submission handler
+            loginForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe').checked;
+
+                // Enhanced validation
+                if (!username || !password) {
+                    showMedicalError('Please enter both username and password');
+                    return;
+                }
+
+                if (username.length < 3) {
+                    showMedicalError('Username must be at least 3 characters');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showMedicalError('Password must be at least 6 characters');
+                    return;
+                }
+
+                try {
+                    showMedicalLoading();
+
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, rememberMe })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        // Store authentication state
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('loggedInUser', username);
+                        localStorage.setItem('userRole', data.user?.role || 'user');
+                        localStorage.setItem('rememberMe', rememberMe);
+
+                        showMedicalSuccess('Login successful! Redirecting to home page...');
+                        
+                        // Redirect to home page after successful login
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1500);
+                    } else {
+                        showMedicalError(data.error || 'Invalid username or password');
+                    }
+                } catch (err) {
+                    showMedicalError('Connection error. Please check your internet connection and try again.');
+                    console.error('Login error:', err);
+                } finally {
+                    hideMedicalLoading();
+                }
+            });
+
+            // Input field enhancements
+            const inputs = document.querySelectorAll('.medical-input-wrapper input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+
+            // Remember me functionality
+            const savedUsername = localStorage.getItem('rememberMe') === 'true' ? localStorage.getItem('savedUsername') : null;
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('rememberMe').checked = true;
+            }
+
+            // Notification functions
+            function showMedicalLoading() {
+                loadingOverlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function hideMedicalLoading() {
+                loadingOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            function showMedicalSuccess(message) {
+                notification.className = 'medical-notification medical-notification-success';
+                notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+                notification.style.display = 'flex';
+                
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
+            }
+
+            function showMedicalError(message) {
+                notification.className = 'medical-notification medical-notification-error';
+                notification.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+                notification.style.display = 'flex';
+                
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
+            }
+
+            // Make functions global
+            window.showMedicalLoading = showMedicalLoading;
+            window.hideMedicalLoading = hideMedicalLoading;
+            window.showMedicalSuccess = showMedicalSuccess;
+            window.showMedicalError = showMedicalError;
+        });
+    </script>
+
+    <style>
+        /* Medical Color System - Same as Homepage */
+        :root {
+            /* Primary Medical Colors - Professional Teal Theme */
+            --medical-primary: #0f766e;
+            --medical-primary-light: #14b8a6;
+            --medical-primary-dark: #115e59;
+            --medical-primary-gradient: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #5eead4 100%);
+        }
+        
+        .medical-dashboard-page {
+            background: var(--medical-primary-gradient);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .medical-login-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .medical-login-container {
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .medical-login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            padding: 3rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(20px);
+            transform: translateY(0);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .medical-login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .medical-login-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        }
+        
+        .medical-login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .medical-login-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .medical-login-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .medical-login-header h2 {
+            color: #1a202c;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .medical-login-header p {
+            color: #4a5568;
+            font-size: 1rem;
+            margin: 0;
+            font-weight: 400;
+        }
+        
+        .medical-form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .medical-form-group label {
+            display: block;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .medical-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .medical-input-wrapper i {
+            position: absolute;
+            left: 1.25rem;
+            color: #718096;
+            font-size: 1.2rem;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .medical-input-wrapper input {
+            width: 100%;
+            padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: #2d3748;
+        }
+        
+        .medical-input-wrapper input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .medical-input-wrapper input:focus + i {
+            color: #667eea;
+        }
+        
+        .medical-input-wrapper.focused .medical-input-border {
+            width: 100%;
+            height: 2px;
+            background: #667eea;
+            transform: scaleX(1);
+        }
+        
+        .medical-input-border {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            width: 100%;
+            background: #e2e8f0;
+            transform: scaleX(0);
+            transition: all 0.3s ease;
+            transform-origin: left;
+        }
+        
+        .medical-form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .medical-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .medical-checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+        
+        .medical-btn {
+            padding: 1.25rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .medical-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .medical-btn:hover::before {
+            left: 0;
+        }
+        
+        .medical-btn-primary {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            color: var(--medical-primary);
+            border: 2px solid var(--medical-primary);
+            box-shadow: 0 8px 25px rgba(15, 118, 110, 0.2);
+        }
+        
+        .medical-btn-primary:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, var(--medical-primary) 0%, var(--medical-primary-light) 100%);
+            color: white;
+            border-color: var(--medical-primary);
+            box-shadow: 0 12px 35px rgba(15, 118, 110, 0.4);
+        }
+        
+        .medical-btn-primary:active {
+            transform: translateY(-1px);
+        }
+        
+        .medical-btn-secondary {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .medical-btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .medical-btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .medical-login-divider {
+            display: flex;
+            align-items: center;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .medical-login-divider::before,
+        .medical-login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2e8f0;
+        }
+        
+        .medical-login-divider span {
+            padding: 0 1.5rem;
+            color: #718096;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .medical-login-social {
+            margin-top: 1.5rem;
+        }
+        
+        .medical-login-footer {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .medical-login-footer p {
+            color: #4a5568;
+            font-size: 0.95rem;
+            margin: 0;
+            font-weight: 400;
+        }
+        
+        .medical-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .medical-link:hover {
+            color: #764ba2;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .medical-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.25rem 0;
+        }
+        
+        .medical-header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .medical-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.4rem;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .medical-logo-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .medical-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .medical-nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .medical-nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .medical-nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .medical-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .medical-loading-spinner {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .medical-loading-spinner i {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+        
+        .medical-loading-spinner span {
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .medical-notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 9998;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .medical-notification-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .medical-notification-error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .medical-notification i {
+            font-size: 1.2rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .medical-login-section {
+                padding: 1rem;
+            }
+            
+            .medical-login-card {
+                padding: 2rem;
+            }
+            
+            .medical-header-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .medical-nav {
+                gap: 0.5rem;
+            }
+            
+            .medical-nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .medical-notification {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+                padding: 0.75rem 1rem;
+            }
+        }
+    </style>
+</body>
+</html>
+
+    <footer>
+        <p> 2026 AI Acne Detection System</p>
+        <p>© 2026 AI Acne Detection System</p>
+    </footer>
+
+</body>
+
+</html>

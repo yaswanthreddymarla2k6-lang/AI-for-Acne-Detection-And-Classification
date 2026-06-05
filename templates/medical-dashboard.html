@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Report - DermaAI Medical Systems</title>
+    
+    <!-- Medical Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Medical UI Framework -->
+    <link rel="stylesheet" href="/static/css/medical-ui.css">
+    
+    <!-- Medical Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Medical Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Medical Print Styles -->
+    <style>
+        /* Medical Dashboard Specific Styles */
+        .medical-dashboard-page {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
+            min-height: 100vh;
+        }
+        
+        .medical-dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-6);
+        }
+        
+        .medical-report-header {
+            background: var(--medical-white);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--medical-gray-200);
+            padding: var(--space-8);
+            margin-bottom: var(--space-8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .medical-report-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--medical-primary);
+        }
+        
+        .medical-report-title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-6);
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+        
+        .medical-report-title {
+            font-family: var(--font-secondary);
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--medical-primary);
+            margin-bottom: var(--space-2);
+        }
+        
+        .medical-report-subtitle {
+            color: var(--medical-gray-600);
+            font-size: var(--text-lg);
+        }
+        
+        .medical-report-meta {
+            display: flex;
+            gap: var(--space-6);
+            flex-wrap: wrap;
+        }
+        
+        .medical-report-meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .medical-report-meta-label {
+            font-size: var(--text-sm);
+            color: var(--medical-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--space-1);
+        }
+        
+        .medical-report-meta-value {
+            font-weight: 600;
+            color: var(--medical-gray-800);
+        }
+        
+        .medical-report-actions {
+            display: flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+        
+        /* Clinical Summary Cards */
+        .medical-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+        
+        .medical-summary-card {
+            background: var(--medical-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            border: 1px solid var(--medical-gray-200);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .medical-summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--medical-primary);
+        }
+        
+        .medical-summary-card.severity-mild::before { background: var(--severity-mild); }
+        .medical-summary-card.severity-moderate::before { background: var(--severity-moderate); }
+        .medical-summary-card.severity-severe::before { background: var(--severity-severe); }
+        
+        .medical-summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .medical-summary-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+        
+        .medical-summary-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-xl);
+            color: var(--medical-white);
+            flex-shrink: 0;
+        }
+        
+        .medical-summary-icon.primary { background: var(--medical-primary); }
+        .medical-summary-icon.success { background: var(--clinical-green); }
+        .medical-summary-icon.warning { background: var(--clinical-orange); }
+        .medical-summary-icon.danger { background: var(--clinical-red); }
+        
+        .medical-summary-title {
+            font-weight: 600;
+            color: var(--medical-gray-600);
+            text-transform: uppercase;
+            font-size: var(--text-sm);
+            letter-spacing: 0.05em;
+        }
+        
+        .medical-summary-value {
+            font-family: var(--font-secondary);
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--medical-gray-800);
+            margin-bottom: var(--space-2);
+        }
+        
+        .medical-summary-description {
+            color: var(--medical-gray-600);
+            font-size: var(--text-sm);
+        }
+        
+        /* Main Clinical Grid */
+        .medical-main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+        
+        /* Clinical Image Panel */
+        .medical-image-panel {
+            background: var(--medical-white);
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--medical-gray-200);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        
+        .medical-panel-header {
+            background: var(--medical-gray-50);
+            padding: var(--space-6);
+            border-bottom: 1px solid var(--medical-gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .medical-panel-title {
+            font-family: var(--font-secondary);
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--medical-gray-800);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .medical-panel-badge {
+            background: var(--medical-primary);
+            color: var(--medical-white);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius);
+            font-size: var(--text-sm);
+            font-weight: 600;
+        }
+        
+        .medical-image-container {
+            padding: var(--space-6);
+            background: var(--medical-gray-50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+        }
+        
+        .medical-result-image {
+            max-width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .medical-image-controls {
+            padding: var(--space-6);
+            border-top: 1px solid var(--medical-gray-200);
+            display: flex;
+            gap: var(--space-4);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .medical-image-btn {
+            background: var(--medical-gray-50);
+            color: var(--medical-primary);
+            border: 1px solid var(--medical-gray-200);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: var(--text-sm);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .medical-image-btn:hover {
+            background: var(--medical-primary);
+            color: var(--medical-white);
+            transform: translateY(-1px);
+        }
+        
+        /* Clinical Findings Panel */
+        .medical-findings-panel {
+            background: var(--medical-white);
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--medical-gray-200);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .medical-findings-list {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 600px;
+            padding: var(--space-4);
+        }
+        
+        .medical-findings-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .medical-findings-list::-webkit-scrollbar-track {
+            background: var(--medical-gray-100);
+            border-radius: 3px;
+        }
+        
+        .medical-findings-list::-webkit-scrollbar-thumb {
+            background: var(--medical-primary);
+            border-radius: 3px;
+        }
+        
+        .medical-finding-item {
+            background: var(--medical-gray-50);
+            border: 1px solid var(--medical-gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .medical-finding-item:hover {
+            background: var(--bg-medical);
+            border-color: var(--medical-primary);
+            transform: translateX(4px);
+        }
+        
+        .medical-finding-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-3);
+        }
+        
+        .medical-finding-image {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius);
+            object-fit: cover;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+        
+        .medical-finding-info {
+            flex: 1;
+        }
+        
+        .medical-finding-type {
+            font-family: var(--font-secondary);
+            font-size: var(--text-lg);
+            font-weight: 700;
+            color: var(--medical-gray-800);
+            margin-bottom: var(--space-1);
+        }
+        
+        .medical-finding-confidence {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .medical-confidence-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--medical-gray-200);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            max-width: 120px;
+        }
+        
+        .medical-confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--clinical-green), var(--medical-primary));
+            transition: width 0.3s ease;
+        }
+        
+        .medical-confidence-text {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--medical-gray-600);
+            font-weight: 600;
+        }
+        
+        .medical-finding-location {
+            font-size: var(--text-sm);
+            color: var(--medical-gray-500);
+            margin-top: var(--space-2);
+        }
+        
+        /* Clinical Charts Section */
+        .medical-charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+        
+        .medical-chart-panel {
+            background: var(--medical-white);
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--medical-gray-200);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        
+        .medical-chart-container {
+            padding: var(--space-6);
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Clinical Recommendations */
+        .medical-recommendations-panel {
+            background: var(--medical-white);
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--medical-gray-200);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-bottom: var(--space-8);
+        }
+        
+        .medical-recommendations-list {
+            padding: var(--space-6);
+            display: grid;
+            gap: var(--space-4);
+        }
+        
+        .medical-recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background: var(--medical-gray-50);
+            border: 1px solid var(--medical-gray-200);
+            border-radius: var(--radius-lg);
+            transition: all 0.3s ease;
+        }
+        
+        .medical-recommendation-item:hover {
+            background: var(--bg-medical);
+            border-color: var(--medical-primary);
+        }
+        
+        .medical-recommendation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--medical-primary);
+            color: var(--medical-white);
+            flex-shrink: 0;
+        }
+        
+        .medical-recommendation-content {
+            flex: 1;
+        }
+        
+        .medical-recommendation-title {
+            font-family: var(--font-secondary);
+            font-size: var(--text-lg);
+            font-weight: 700;
+            color: var(--medical-gray-800);
+            margin-bottom: var(--space-2);
+        }
+        
+        .medical-recommendation-text {
+            color: var(--medical-gray-600);
+            line-height: 1.6;
+        }
+        
+        /* Medical Export Section */
+        .medical-export-panel {
+            background: var(--medical-white);
+            border-radius: var(--radius-2xl);
+            border: 1px solid var(--medical-gray-200);
+            box-shadow: var(--shadow-lg);
+            padding: var(--space-8);
+            text-align: center;
+        }
+        
+        .medical-export-title {
+            font-family: var(--font-secondary);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--medical-gray-800);
+            margin-bottom: var(--space-4);
+        }
+        
+        .medical-export-description {
+            color: var(--medical-gray-600);
+            margin-bottom: var(--space-6);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .medical-export-buttons {
+            display: flex;
+            gap: var(--space-4);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .medical-export-btn {
+            background: var(--medical-gray-50);
+            color: var(--medical-primary);
+            border: 1px solid var(--medical-gray-200);
+            padding: var(--space-3) var(--space-6);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .medical-export-btn:hover {
+            background: var(--medical-primary);
+            color: var(--medical-white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Print Styles */
+        @media print {
+            .medical-dashboard-container {
+                padding: 0;
+                max-width: none;
+            }
+            
+            .medical-report-actions,
+            .medical-image-controls,
+            .medical-export-panel {
+                display: none;
+            }
+            
+            .medical-summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .medical-main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .medical-chart-panel {
+                break-inside: avoid;
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .medical-main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .medical-charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .medical-dashboard-container {
+                padding: var(--space-4);
+            }
+            
+            .medical-report-title-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .medical-report-meta {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .medical-summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .medical-report-actions {
+                width: 100%;
+                justify-content: stretch;
+            }
+            
+            .medical-btn {
+                flex: 1;
+            }
+            
+            .medical-finding-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .medical-finding-confidence {
+                justify-content: center;
+            }
+            
+            .medical-export-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .medical-export-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        /* Loading Animation */
+        .medical-loading-skeleton {
+            background: linear-gradient(90deg, var(--medical-gray-100) 0%, var(--medical-gray-200) 50%, var(--medical-gray-100) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        /* Medical Severity Indicators */
+        .medical-severity-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-2xl);
+            font-weight: 600;
+            font-size: var(--text-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .medical-severity-indicator.mild {
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--severity-mild);
+        }
+        
+        .medical-severity-indicator.moderate {
+            background: rgba(237, 137, 54, 0.1);
+            color: var(--severity-moderate);
+        }
+        
+        .medical-severity-indicator.severe {
+            background: rgba(229, 62, 62, 0.1);
+            color: var(--severity-severe);
+        }
+    </style>
+</head>
+
+<body class="medical-dashboard-page">
+    <!-- Medical Header -->
+    <header class="medical-header">
+        <div class="medical-header-container">
+            <a href="/" class="medical-logo">
+                <div class="medical-logo-icon">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <span>DermaAI</span>
+            </a>
+            
+            <nav class="medical-nav">
+                <a href="/" class="medical-nav-link">Home</a>
+                <a href="/upload" class="medical-nav-link">Analysis</a>
+                <a href="/dashboard" class="medical-nav-link active">Report</a>
+                <a href="#contact" class="medical-nav-link">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Clinical Dashboard -->
+    <div class="medical-dashboard-container">
+        <!-- Clinical Report Header -->
+        <div class="medical-report-header">
+            <div class="medical-report-title-section">
+                <div>
+                    <h1 class="medical-report-title">Clinical Analysis Report</h1>
+                    <p class="medical-report-subtitle">AI-Powered Acne Detection & Classification Results</p>
+                </div>
+                <div class="medical-report-actions">
+                    <button class="medical-btn medical-btn-primary" onclick="window.print()">
+                        <i class="fas fa-print"></i>
+                        Print Report
+                    </button>
+                    <a href="/upload" class="medical-btn medical-btn-secondary">
+                        <i class="fas fa-redo"></i>
+                        New Analysis
+                    </a>
+                </div>
+            </div>
+            
+            <div class="medical-report-meta">
+                <div class="medical-report-meta-item">
+                    <div class="medical-report-meta-label">Report ID</div>
+                    <div class="medical-report-meta-value" id="reportId">DERMA-2026-001</div>
+                </div>
+                <div class="medical-report-meta-item">
+                    <div class="medical-report-meta-label">Analysis Date</div>
+                    <div class="medical-report-meta-value" id="analysisDate">May 1, 2026</div>
+                </div>
+                <div class="medical-report-meta-item">
+                    <div class="medical-report-meta-label">Confidence Score</div>
+                    <div class="medical-report-meta-value" id="overallConfidence">98.5%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Summary Cards -->
+        <div class="medical-summary-grid">
+            <div class="medical-summary-card">
+                <div class="medical-summary-header">
+                    <div class="medical-summary-icon primary">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div class="medical-summary-title">Total Detections</div>
+                </div>
+                <div class="medical-summary-value" id="totalCount">0</div>
+                <div class="medical-summary-description">Acne lesions identified</div>
+            </div>
+            
+            <div class="medical-summary-card" id="severityCard">
+                <div class="medical-summary-header">
+                    <div class="medical-summary-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="medical-summary-title">Severity Level</div>
+                </div>
+                <div class="medical-summary-value" id="severityText">-</div>
+                <div class="medical-severity-indicator" id="severityBadge">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Assessed</span>
+                </div>
+            </div>
+            
+            <div class="medical-summary-card">
+                <div class="medical-summary-header">
+                    <div class="medical-summary-icon success">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="medical-summary-title">Dominant Type</div>
+                </div>
+                <div class="medical-summary-value" id="dominantType">-</div>
+                <div class="medical-summary-description">Most common lesion</div>
+            </div>
+            
+            <div class="medical-summary-card">
+                <div class="medical-summary-header">
+                    <div class="medical-summary-icon danger">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="medical-summary-title">Avg Confidence</div>
+                </div>
+                <div class="medical-summary-value" id="avgConfidence">0%</div>
+                <div class="medical-summary-description">Detection accuracy</div>
+            </div>
+        </div>
+
+        <!-- Main Clinical Grid -->
+        <div class="medical-main-grid">
+            <!-- Clinical Image Panel -->
+            <div class="medical-image-panel">
+                <div class="medical-panel-header">
+                    <h2 class="medical-panel-title">
+                        <i class="fas fa-image"></i>
+                        Detection Mapping
+                    </h2>
+                    <div class="medical-panel-badge">AI Enhanced</div>
+                </div>
+                <div class="medical-image-container">
+                    <img id="mainImage" src="" alt="Clinical Analysis Result" class="medical-result-image">
+                </div>
+                <div class="medical-image-controls">
+                    <button class="medical-image-btn" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand"></i>
+                        Fullscreen
+                    </button>
+                    <button class="medical-image-btn" onclick="downloadImage()">
+                        <i class="fas fa-download"></i>
+                        Download
+                    </button>
+                    <button class="medical-image-btn" onclick="resetZoom()">
+                        <i class="fas fa-search-minus"></i>
+                        Reset View
+                    </button>
+                    <button class="medical-image-btn" onclick="toggleAnnotations()">
+                        <i class="fas fa-eye"></i>
+                        Toggle Annotations
+                    </button>
+                </div>
+            </div>
+
+            <!-- Clinical Findings Panel -->
+            <div class="medical-findings-panel">
+                <div class="medical-panel-header">
+                    <h2 class="medical-panel-title">
+                        <i class="fas fa-list-ul"></i>
+                        Clinical Findings
+                    </h2>
+                    <div class="medical-panel-badge" id="findingsCount">0 items</div>
+                </div>
+                <div class="medical-findings-list" id="findingsList">
+                    <!-- Clinical findings will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Charts Section -->
+        <div class="medical-charts-section">
+            <div class="medical-chart-panel">
+                <div class="medical-panel-header">
+                    <h2 class="medical-panel-title">
+                        <i class="fas fa-chart-pie"></i>
+                        Acne Type Distribution
+                    </h2>
+                </div>
+                <div class="medical-chart-container">
+                    <canvas id="typeDistributionChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="medical-chart-panel">
+                <div class="medical-panel-header">
+                    <h2 class="medical-panel-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Confidence Analysis
+                    </h2>
+                </div>
+                <div class="medical-chart-container">
+                    <canvas id="confidenceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Recommendations -->
+        <div class="medical-recommendations-panel">
+            <div class="medical-panel-header">
+                <h2 class="medical-panel-title">
+                    <i class="fas fa-user-md"></i>
+                    Clinical Recommendations
+                </h2>
+            </div>
+            <div class="medical-recommendations-list" id="recommendationsList">
+                <!-- Recommendations will be populated here -->
+            </div>
+        </div>
+
+        <!-- Medical Export Section -->
+        <div class="medical-export-panel">
+            <h2 class="medical-export-title">Export Clinical Report</h2>
+            <p class="medical-export-description">
+                Download your clinical analysis report in various formats for documentation or sharing with healthcare providers.
+            </p>
+            <div class="medical-export-buttons">
+                <button class="medical-export-btn" onclick="exportPDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    PDF Report
+                </button>
+                <button class="medical-export-btn" onclick="exportJSON()">
+                    <i class="fas fa-file-code"></i>
+                    JSON Data
+                </button>
+                <button class="medical-export-btn" onclick="exportCSV()">
+                    <i class="fas fa-file-csv"></i>
+                    CSV Export
+                </button>
+                <button class="medical-export-btn" onclick="emailReport()">
+                    <i class="fas fa-envelope"></i>
+                    Email Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Clinical Dashboard JavaScript
+        let clinicalResults = null;
+        let typeChart = null;
+        let confidenceChart = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadClinicalResults();
+            initializeClinicalCharts();
+            generateClinicalRecommendations();
+            setupReportMetadata();
+        });
+
+        function loadClinicalResults() {
+            const storedResults = localStorage.getItem('acne_results');
+            if (!storedResults) {
+                showClinicalError('No clinical analysis results found. Please run an analysis first.');
+                return;
+            }
+
+            clinicalResults = JSON.parse(storedResults);
+            populateClinicalDashboard();
+        }
+
+        function setupReportMetadata() {
+            // Generate unique report ID
+            const reportId = 'DERMA-' + new Date().getFullYear() + '-' + 
+                           Math.random().toString(36).substr(2, 9).toUpperCase();
+            document.getElementById('reportId').textContent = reportId;
+            
+            // Set current date
+            const today = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('analysisDate').textContent = today;
+        }
+
+        function populateClinicalDashboard() {
+            // Update summary cards
+            document.getElementById('totalCount').textContent = clinicalResults.total_count || 0;
+            document.getElementById('severityText').textContent = clinicalResults.severity || 'Assessing';
+            
+            // Update severity indicator
+            const severity = (clinicalResults.severity || '').toLowerCase();
+            const severityCard = document.getElementById('severityCard');
+            const severityBadge = document.getElementById('severityBadge');
+            
+            severityCard.className = 'medical-summary-card severity-' + severity;
+            severityBadge.className = 'medical-severity-indicator ' + severity;
+            severityBadge.querySelector('span').textContent = clinicalResults.severity || 'Assessed';
+
+            // Update dominant type
+            const dominantType = getDominantAcneType();
+            document.getElementById('dominantType').textContent = dominantType || 'None';
+
+            // Update confidence scores
+            const avgConfidence = calculateAverageConfidence();
+            document.getElementById('avgConfidence').textContent = avgConfidence + '%';
+            document.getElementById('overallConfidence').textContent = avgConfidence + '%';
+
+            // Update main image
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = clinicalResults.full_annotated_image || '';
+
+            // Populate clinical findings
+            populateClinicalFindings();
+
+            // Update findings count
+            document.getElementById('findingsCount').textContent = 
+                `${clinicalResults.detections?.length || 0} findings`;
+        }
+
+        function populateClinicalFindings() {
+            const findingsList = document.getElementById('findingsList');
+            findingsList.innerHTML = '';
+
+            if (!clinicalResults.detections || clinicalResults.detections.length === 0) {
+                findingsList.innerHTML = '<div class="text-center p-6 text-gray-500">No clinical findings detected</div>';
+                return;
+            }
+
+            clinicalResults.detections.forEach((finding, index) => {
+                const findingItem = document.createElement('div');
+                findingItem.className = 'medical-finding-item';
+                findingItem.innerHTML = `
+                    <div class="medical-finding-header">
+                        <img src="${finding.crop}" alt="${finding.type}" class="medical-finding-image">
+                        <div class="medical-finding-info">
+                            <div class="medical-finding-type">${finding.type}</div>
+                            <div class="medical-finding-confidence">
+                                <div class="medical-confidence-bar">
+                                    <div class="medical-confidence-fill" style="width: ${finding.confidence * 100}%"></div>
+                                </div>
+                                <span class="medical-confidence-text">${(finding.confidence * 100).toFixed(1)}%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="medical-finding-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Location: Region ${index + 1} • Confidence: ${(finding.confidence * 100).toFixed(1)}%
+                    </div>
+                `;
+                
+                findingItem.addEventListener('click', () => {
+                    highlightClinicalFinding(index);
+                });
+                
+                findingsList.appendChild(findingItem);
+            });
+        }
+
+        function highlightClinicalFinding(index) {
+            // This would highlight the specific finding on the main image
+            console.log('Highlighting clinical finding:', index);
+            // Implementation would depend on image mapping coordinates
+        }
+
+        function getDominantAcneType() {
+            if (!clinicalResults.detections || clinicalResults.detections.length === 0) return null;
+            
+            const typeCounts = {};
+            clinicalResults.detections.forEach(finding => {
+                typeCounts[finding.type] = (typeCounts[finding.type] || 0) + 1;
+            });
+            
+            return Object.keys(typeCounts).reduce((a, b) => 
+                typeCounts[a] > typeCounts[b] ? a : b
+            );
+        }
+
+        function calculateAverageConfidence() {
+            if (!clinicalResults.detections || clinicalResults.detections.length === 0) return 0;
+            
+            const totalConfidence = clinicalResults.detections.reduce((sum, finding) => sum + finding.confidence, 0);
+            const average = totalConfidence / clinicalResults.detections.length;
+            return Math.round(average * 100);
+        }
+
+        function initializeClinicalCharts() {
+            // Type Distribution Chart
+            const typeCtx = document.getElementById('typeDistributionChart').getContext('2d');
+            const typeData = getAcneTypeDistribution();
+            
+            typeChart = new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(typeData),
+                    datasets: [{
+                        data: Object.values(typeData),
+                        backgroundColor: [
+                            '#2d3748', // Blackheads
+                            '#e2e8f0', // Whiteheads
+                            '#ed8936', // Papules
+                            '#e53e3e', // Pustules
+                            '#9f7aea'  // Cysts
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#2d3748',
+                                padding: 15,
+                                font: {
+                                    family: 'Inter',
+                                    size: 12,
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Confidence Analysis Chart
+            const confidenceCtx = document.getElementById('confidenceChart').getContext('2d');
+            const confidenceData = getConfidenceAnalysis();
+            
+            confidenceChart = new Chart(confidenceCtx, {
+                type: 'bar',
+                data: {
+                    labels: confidenceData.labels,
+                    datasets: [{
+                        label: 'Confidence %',
+                        data: confidenceData.values,
+                        backgroundColor: 'rgba(44, 82, 130, 0.8)',
+                        borderColor: 'rgba(44, 82, 130, 1)',
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#4a5568',
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#4a5568',
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Confidence: ${context.parsed.y}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getAcneTypeDistribution() {
+            const distribution = {};
+            if (clinicalResults.detections) {
+                clinicalResults.detections.forEach(finding => {
+                    distribution[finding.type] = (distribution[finding.type] || 0) + 1;
+                });
+            }
+            return distribution;
+        }
+
+        function getConfidenceAnalysis() {
+            if (!clinicalResults.detections) return { labels: [], values: [] };
+            
+            return {
+                labels: clinicalResults.detections.map((_, i) => `Finding ${i + 1}`),
+                values: clinicalResults.detections.map(finding => Math.round(finding.confidence * 100))
+            };
+        }
+
+        function generateClinicalRecommendations() {
+            const recommendationsList = document.getElementById('recommendationsList');
+            const recommendations = getClinicalRecommendations();
+            
+            recommendationsList.innerHTML = '';
+            recommendations.forEach(rec => {
+                const recItem = document.createElement('div');
+                recItem.className = 'medical-recommendation-item';
+                recItem.innerHTML = `
+                    <div class="medical-recommendation-icon">
+                        <i class="${rec.icon}"></i>
+                    </div>
+                    <div class="medical-recommendation-content">
+                        <div class="medical-recommendation-title">${rec.title}</div>
+                        <div class="medical-recommendation-text">${rec.text}</div>
+                    </div>
+                `;
+                recommendationsList.appendChild(recItem);
+            });
+        }
+
+        function getClinicalRecommendations() {
+            const severity = (clinicalResults.severity || '').toLowerCase();
+            const dominantType = getDominantAcneType();
+            
+            const baseRecommendations = [
+                {
+                    icon: 'fas fa-user-md',
+                    title: 'Consult Dermatologist',
+                    text: 'Schedule a consultation with a qualified dermatologist for comprehensive evaluation and personalized treatment plan.'
+                },
+                {
+                    icon: 'fas fa-soap',
+                    title: 'Gentle Cleansing Routine',
+                    text: 'Implement a twice-daily cleansing routine using non-comedogenic, pH-balanced cleansers suitable for your skin type.'
+                },
+                {
+                    icon: 'fas fa-tint-slash',
+                    title: 'Avoid Irritants',
+                    text: 'Refrain from picking or squeezing lesions to prevent scarring and secondary infections.'
+                },
+                {
+                    icon: 'fas fa-sun',
+                    title: 'Sun Protection',
+                    text: 'Use broad-spectrum sunscreen with SPF 30+ daily to prevent post-inflammatory hyperpigmentation.'
+                }
+            ];
+
+            if (severity === 'severe') {
+                baseRecommendations.unshift({
+                    icon: 'fas fa-exclamation-triangle',
+                    title: 'Immediate Medical Attention',
+                    text: 'Severe acne requires prompt professional medical intervention to prevent scarring and complications.'
+                });
+            }
+
+            if (dominantType === 'Cysts') {
+                baseRecommendations.push({
+                    icon: 'fas fa-pills',
+                    title: 'Systemic Treatment',
+                    text: 'Cystic acne often requires systemic therapy including oral antibiotics or isotretinoin under medical supervision.'
+                });
+            }
+
+            if (dominantType === 'Pustules') {
+                baseRecommendations.push({
+                    icon: 'fas fa-spray-can',
+                    title: 'Topical Treatments',
+                    text: 'Consider topical retinoids or benzoyl peroxide to reduce inflammation and bacterial colonization.'
+                });
+            }
+
+            return baseRecommendations;
+        }
+
+        // Clinical Action Functions
+        function toggleFullscreen() {
+            const img = document.getElementById('mainImage');
+            if (!document.fullscreenElement) {
+                img.requestFullscreen().catch(err => {
+                    console.error('Error attempting to enable fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.href = clinicalResults.full_annotated_image;
+            link.download = `clinical-analysis-${Date.now()}.jpg`;
+            link.click();
+        }
+
+        function resetZoom() {
+            const img = document.getElementById('mainImage');
+            img.style.transform = 'scale(1)';
+        }
+
+        function toggleAnnotations() {
+            const img = document.getElementById('mainImage');
+            // Toggle between original and annotated image
+            if (img.src.includes('annotated')) {
+                img.src = clinicalResults.acne_image || img.src;
+            } else {
+                img.src = clinicalResults.full_annotated_image;
+            }
+        }
+
+        function exportPDF() {
+            window.print();
+        }
+
+        function exportJSON() {
+            const dataStr = JSON.stringify(clinicalResults, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `clinical-report-${Date.now()}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function exportCSV() {
+            if (!clinicalResults.detections || clinicalResults.detections.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            let csv = 'Finding Number,Type,Confidence (%),Location\n';
+            clinicalResults.detections.forEach((finding, index) => {
+                csv += `${index + 1},${finding.type},${(finding.confidence * 100).toFixed(1)},Region ${index + 1}\n`;
+            });
+
+            const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', `clinical-findings-${Date.now()}.csv`);
+            linkElement.click();
+        }
+
+        function emailReport() {
+            const subject = 'Clinical Acne Analysis Report - DermaAI';
+            const body = `Clinical Analysis Report:\n\nReport ID: ${document.getElementById('reportId').textContent}\nAnalysis Date: ${document.getElementById('analysisDate').textContent}\nTotal Detections: ${clinicalResults.total_count}\nSeverity Level: ${clinicalResults.severity}\nAverage Confidence: ${calculateAverageConfidence()}%\n\nView the full report for detailed findings and recommendations.`;
+            
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        function showClinicalError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'medical-summary-card severity-moderate';
+            errorDiv.innerHTML = `
+                <div class="medical-summary-header">
+                    <div class="medical-summary-icon warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="medical-summary-title">Clinical Error</div>
+                </div>
+                <div class="medical-summary-description">${message}</div>
+                <div style="margin-top: 1rem;">
+                    <a href="/upload" class="medical-btn medical-btn-primary">
+                        Run New Analysis
+                    </a>
+                </div>
+            `;
+            document.querySelector('.medical-dashboard-container').prepend(errorDiv);
+        }
+
+        // Keyboard shortcuts for clinical use
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'p':
+                        e.preventDefault();
+                        exportPDF();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        exportJSON();
+                        break;
+                    case 'd':
+                        e.preventDefault();
+                        downloadImage();
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        emailReport();
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

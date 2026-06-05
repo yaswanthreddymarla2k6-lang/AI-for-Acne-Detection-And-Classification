@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - AI Acne Detection</title>
+    <!-- Modern Font: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="auth.js"></script>
+</head>
+
+<body id="login-page">
+
+    <header>
+        <div class="logo">🩺 AI Acne Detection</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="upload.html">Upload</a>
+            <a href="about.html">About</a>
+            <a href="login.html">Login</a>
+            <a href="signup.html">Sign Up</a>
+        </nav>
+    </header>
+
+    <section class="login-section">
+        <div class="login-box">
+            <h1>User Login</h1>
+            <p>Please login to continue</p>
+
+            <form id="loginForm">
+                <input type="text" name="username" placeholder="Enter Username" required>
+                <input type="password" name="password" placeholder="Enter Password" required>
+                <button type="submit" class="btn">Login</button>
+            </form>
+
+            <script>
+                document.getElementById('loginForm').addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const username = e.target.username.value;
+                    const password = e.target.password.value;
+
+                    try {
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, password })
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            // Maintain UI state
+                            localStorage.setItem('isLoggedIn', 'true');
+                            localStorage.setItem('loggedInUser', username);
+                            localStorage.setItem('userRole', data.role || 'user');
+
+                            if (data.role === 'admin') {
+                                window.location.href = 'admin.html';
+                            } else {
+                                window.location.href = 'index.html';
+                            }
+                        } else {
+                            alert(data.error || 'Invalid username or password. Please try again.');
+                        }
+                    } catch (err) {
+                        alert('Could not connect to the server. Make sure it is running on port 3000.');
+                    }
+                });
+            </script>
+
+            <p class="back-home" style="margin-top: 20px;">
+                <a href="signup.html">Don't have an account? Sign up</a>
+            </p>
+            <p class="back-home" style="margin-top: 10px;">
+                <a href="index.html">← Back to Home</a>
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 AI Acne Detection System</p>
+    </footer>
+
+</body>
+
+</html>

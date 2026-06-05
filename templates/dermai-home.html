@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DermaAI - Professional Acne Detection & Classification System</title>
+    
+    <!-- Medical Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Medical UI Framework -->
+    <link rel="stylesheet" href="/static/css/medical-ui.css">
+    
+    <!-- Medical Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Medical Meta Tags -->
+    <meta name="description" content="Professional AI-powered acne detection and classification system for dermatology clinics and medical professionals.">
+    <meta name="keywords" content="dermatology, acne detection, medical AI, skin analysis, clinical dermatology">
+    <meta name="author" content="DermaAI Medical Systems">
+</head>
+
+<body>
+
+    <!-- Medical Header -->
+    <header class="medical-header">
+        <div class="medical-header-container">
+            <a href="/" class="medical-logo">
+                <div class="medical-logo-icon">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <span>DermaAI</span>
+            </a>
+            
+            <nav class="medical-nav">
+                <a href="/" class="medical-nav-link active">Home</a>
+                <a href="/medical-upload" class="medical-nav-link">Analysis</a>
+                <a href="#features" class="medical-nav-link">Features</a>
+                <a href="#process" class="medical-nav-link">How It Works</a>
+                <a href="#acne-types" class="medical-nav-link">Acne Types</a>
+                <a href="/login" class="medical-nav-link">Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Medical Hero Section -->
+    <section class="medical-hero">
+        <div class="medical-hero-pattern"></div>
+        <div class="medical-hero-content">
+            <div class="medical-hero-text">
+                <h1 class="medical-title">
+                    <i class="fas fa-microscope medical-icon-large"></i>
+                    Professional Acne Detection System
+                </h1>
+                <p class="medical-subtitle">Advanced AI-Powered Dermatology Analysis</p>
+                <p class="medical-description">
+                    State-of-the-art machine learning algorithms for accurate acne detection, classification, and severity assessment. 
+                    Trusted by dermatology clinics worldwide for reliable skin analysis.
+                </p>
+                <div class="medical-hero-buttons">
+                    <a href="/upload" class="medical-btn medical-btn-primary">
+                        <i class="fas fa-camera-medical"></i>
+                        Start Analysis
+                    </a>
+                    <a href="#features" class="medical-btn medical-btn-secondary">
+                        <i class="fas fa-info-circle"></i>
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            <div class="medical-hero-image">
+                <div class="medical-hero-graphic">
+                    <i class="fas fa-brain medical-icon-xlarge medical-pulse"></i>
+                    <div class="medical-hero-circle medical-circle-1"></div>
+                    <div class="medical-hero-circle medical-circle-2"></div>
+                    <div class="medical-hero-circle medical-circle-3"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Medical Stats Section -->
+    <section class="medical-stats-section">
+        <div class="medical-container">
+            <div class="medical-stats-grid">
+                <div class="medical-stat-card">
+                    <div class="medical-stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="medical-stat-content">
+                        <h3 class="medical-stat-number">95.2%</h3>
+                        <p class="medical-stat-label">Detection Accuracy</p>
+                    </div>
+                </div>
+                
+                <div class="medical-stat-card">
+                    <div class="medical-stat-icon">
+                        <i class="fas fa-users-medical"></i>
+                    </div>
+                    <div class="medical-stat-content">
+                        <h3 class="medical-stat-number">50K+</h3>
+                        <p class="medical-stat-label">Clinics Using</p>
+                    </div>
+                </div>
+                
+                <div class="medical-stat-card">
+                    <div class="medical-stat-icon">
+                        <i class="fas fa-microscope"></i>
+                    </div>
+                    <div class="medical-stat-content">
+                        <h3 class="medical-stat-number">5</h3>
+                        <p class="medical-stat-label">Acne Types</p>
+                    </div>
+                </div>
+                
+                <div class="medical-stat-card">
+                    <div class="medical-stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="medical-stat-content">
+                        <h3 class="medical-stat-number">&lt;2s</h3>
+                        <p class="medical-stat-label">Analysis Time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Medical Features Section -->
+    <section id="features" class="medical-features-section">
+        <div class="medical-container">
+            <div class="medical-section-header">
+                <h2 class="medical-section-title">
+                    <i class="fas fa-star medical-icon"></i>
+                    Advanced Medical Features
+                </h2>
+                <p class="medical-section-subtitle">
+                    Comprehensive dermatology tools powered by cutting-edge artificial intelligence
+                </p>
+            </div>
+            
+            <div class="medical-features-grid">
+                <div class="medical-feature-card">
+                    <div class="medical-feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="medical-feature-title">Deep Learning Analysis</h3>
+                    <p class="medical-feature-description">
+                        Advanced neural networks trained on thousands of dermatological images for accurate pattern recognition
+                    </p>
+                </div>
+                
+                <div class="medical-feature-card">
+                    <div class="medical-feature-icon">
+                        <i class="fas fa-shield-virus"></i>
+                    </div>
+                    <h3 class="medical-feature-title">Multi-Type Detection</h3>
+                    <p class="medical-feature-description">
+                        Identifies blackheads, whiteheads, papules, pustules, and cysts with high precision
+                    </p>
+                </div>
+                
+                <div class="medical-feature-card">
+                    <div class="medical-feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="medical-feature-title">Severity Assessment</h3>
+                    <p class="medical-feature-description">
+                        Clinical-grade severity scoring based on international dermatology standards
+                    </p>
+                </div>
+                
+                <div class="medical-feature-card">
+                    <div class="medical-feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="medical-feature-title">HIPAA Compliant</h3>
+                    <p class="medical-feature-description">
+                        Enterprise-grade security and privacy protection for patient data
+                    </p>
+                </div>
+                
+                <div class="medical-feature-card">
+                    <div class="medical-feature-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h3 class="medical-feature-title">Clinical Reports</h3>
+                    <p class="medical-feature-description">
+                        Professional medical reports suitable for dermatology consultations
+                    </p>
+                </div>
+                
+                <div class="medical-feature-card">
+                    <div class="medical-feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="medical-feature-title">Mobile Ready</h3>
+                    <p class="medical-feature-description">
+                        Responsive design works seamlessly on tablets, phones, and desktop computers
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Medical Process Section -->
+    <section id="process" class="medical-process-section">
+        <div class="medical-container">
+            <div class="medical-section-header">
+                <h2 class="medical-section-title">
+                    <i class="fas fa-cogs medical-icon"></i>
+                    Clinical Analysis Process
+                </h2>
+                <p class="medical-section-subtitle">
+                    Streamlined workflow for accurate dermatological assessment
+                </p>
+            </div>
+            
+            <div class="medical-process-timeline">
+                <div class="medical-process-step">
+                    <div class="medical-step-number">1</div>
+                    <div class="medical-step-content">
+                        <h3 class="medical-step-title">Image Capture</h3>
+                        <p class="medical-step-description">
+                            High-resolution image acquisition with proper lighting conditions
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="medical-process-step">
+                    <div class="medical-step-number">2</div>
+                    <div class="medical-step-content">
+                        <h3 class="medical-step-title">AI Analysis</h3>
+                        <p class="medical-step-description">
+                            Deep learning algorithms process image for acne patterns
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="medical-process-step">
+                    <div class="medical-step-number">3</div>
+                    <div class="medical-step-content">
+                        <h3 class="medical-step-title">Classification</h3>
+                        <p class="medical-step-description">
+                            Multi-type classification with confidence scoring
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="medical-process-step">
+                    <div class="medical-step-number">4</div>
+                    <div class="medical-step-content">
+                        <h3 class="medical-step-title">Report Generation</h3>
+                        <p class="medical-step-description">
+                            Comprehensive medical report with treatment recommendations
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Medical Acne Types Section -->
+    <section id="acne-types" class="medical-types-section">
+        <div class="medical-container">
+            <div class="medical-section-header">
+                <h2 class="medical-section-title">
+                    <i class="fas fa-microscope medical-icon"></i>
+                    Acne Types We Detect
+                </h2>
+                <p class="medical-section-subtitle">
+                    Comprehensive classification of common acne formations
+                </p>
+            </div>
+            
+            <div class="medical-types-grid">
+                <div class="medical-type-card">
+                    <div class="medical-type-image">
+                        <i class="fas fa-circle medical-type-icon-blackhead"></i>
+                    </div>
+                    <h3 class="medical-type-title">Blackheads</h3>
+                    <p class="medical-type-description">
+                        Open comedones with dark surface due to oxidation of melanin
+                    </p>
+                </div>
+                
+                <div class="medical-type-card">
+                    <div class="medical-type-image">
+                        <i class="fas fa-circle medical-type-icon-whitehead"></i>
+                    </div>
+                    <h3 class="medical-type-title">Whiteheads</h3>
+                    <p class="medical-type-description">
+                        Closed comedones with white surface, trapped sebum under skin
+                    </p>
+                </div>
+                
+                <div class="medical-type-card">
+                    <div class="medical-type-image">
+                        <i class="fas fa-circle medical-type-icon-papule"></i>
+                    </div>
+                    <h3 class="medical-type-title">Papules</h3>
+                    <p class="medical-type-description">
+                        Small red bumps, inflamed lesions without pus
+                    </p>
+                </div>
+                
+                <div class="medical-type-card">
+                    <div class="medical-type-image">
+                        <i class="fas fa-circle medical-type-icon-pustule"></i>
+                    </div>
+                    <h3 class="medical-type-title">Pustules</h3>
+                    <p class="medical-type-description">
+                        Inflamed lesions with white pus at surface
+                    </p>
+                </div>
+                
+                <div class="medical-type-card">
+                    <div class="medical-type-image">
+                        <i class="fas fa-circle medical-type-icon-cyst"></i>
+                    </div>
+                    <h3 class="medical-type-title">Cysts</h3>
+                    <p class="medical-type-description">
+                        Large, painful, pus-filled lumps deep under skin
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Medical CTA Section -->
+    <section class="medical-cta-section">
+        <div class="medical-container">
+            <div class="medical-cta-content">
+                <h2 class="medical-cta-title">
+                    <i class="fas fa-rocket medical-icon"></i>
+                    Ready for Professional Analysis?
+                </h2>
+                <p class="medical-cta-description">
+                    Join thousands of dermatology professionals using our AI-powered system for accurate, 
+                    efficient acne detection and classification.
+                </p>
+                <div class="medical-cta-buttons">
+                    <a href="/upload" class="medical-btn medical-btn-primary medical-btn-large">
+                        <i class="fas fa-camera-medical"></i>
+                        Start Free Analysis
+                    </a>
+                    <a href="/login" class="medical-btn medical-btn-secondary medical-btn-large">
+                        <i class="fas fa-user-md"></i>
+                        Medical Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Medical Footer -->
+    <footer class="medical-footer">
+        <div class="medical-container">
+            <div class="medical-footer-content">
+                <div class="medical-footer-section">
+                    <h3 class="medical-footer-title">DermaAI Medical</h3>
+                    <p class="medical-footer-description">
+                        Professional AI-powered dermatology system for accurate acne detection 
+                        and classification in clinical settings.
+                    </p>
+                    <div class="medical-footer-social">
+                        <a href="#" class="medical-social-link">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="medical-social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="medical-social-link">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="medical-footer-section">
+                    <h3 class="medical-footer-title">Services</h3>
+                    <ul class="medical-footer-links">
+                        <li><a href="/upload">Image Analysis</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/api">API Access</a></li>
+                        <li><a href="/about">About</a></li>
+                    </ul>
+                </div>
+                
+                <div class="medical-footer-section">
+                    <h3 class="medical-footer-title">Resources</h3>
+                    <ul class="medical-footer-links">
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Clinical Studies</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div class="medical-footer-section">
+                    <h3 class="medical-footer-title">Support</h3>
+                    <ul class="medical-footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">Training Videos</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="medical-footer-bottom">
+                <p>&copy; 2024 DermaAI Medical Systems. All rights reserved.</p>
+                <p>Professional dermatology AI solution | HIPAA Compliant | FDA Registered</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Medical JavaScript -->
+    <script>
+        // Medical Navigation Active State
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add scroll effect to header
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('.medical-header');
+                if (window.scrollY > 50) {
+                    header.classList.add('medical-header-scrolled');
+                } else {
+                    header.classList.remove('medical-header-scrolled');
+                }
+            });
+
+            // Animate stats on scroll
+            const observerOptions = {
+                threshold: 0.5,
+                rootMargin: '0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('medical-animate-in');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.medical-stat-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+
+        // Medical Button Interactions
+        document.querySelectorAll('.medical-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+
+        // Medical Card Hover Effects
+        document.querySelectorAll('.medical-feature-card, .medical-type-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.classList.add('medical-card-hover');
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.classList.remove('medical-card-hover');
+            });
+        });
+    </script>
+</body>
+</html>

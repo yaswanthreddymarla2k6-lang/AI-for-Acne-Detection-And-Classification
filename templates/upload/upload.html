@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Analysis - DermaAI Medical Systems</title>
+    
+    <!-- Medical Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Medical UI Framework -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Medical Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Auth Script -->
+    <script src="auth.js"></script>
+    
+    <style>
+        /* Upload page specific styles */
+        .medical-upload-page {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
+            min-height: 100vh;
+        }
+        
+        .medical-upload-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-6);
+        }
+        
+        .medical-upload-header {
+            text-align: center;
+            margin-bottom: var(--space-12);
+        }
+        
+        .medical-upload-title {
+            font-family: var(--font-secondary);
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--medical-primary);
+            margin-bottom: var(--space-4);
+        }
+        
+        .medical-upload-subtitle {
+            font-size: var(--text-lg);
+            color: var(--medical-gray-600);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .medical-guidelines {
+            background: var(--clinical-blue);
+            color: var(--medical-white);
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-8);
+        }
+        
+        .medical-guidelines-title {
+            font-family: var(--font-secondary);
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .medical-guidelines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+        
+        .medical-guideline-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+        }
+        
+        .medical-guideline-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .medical-guideline-text {
+            flex: 1;
+        }
+        
+        .medical-guideline-text strong {
+            display: block;
+            margin-bottom: var(--space-1);
+        }
+        
+        .medical-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12);
+            margin-bottom: var(--space-8);
+        }
+        
+        .medical-upload-section {
+            background: var(--medical-white);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--medical-gray-200);
+            overflow: hidden;
+        }
+        
+        .medical-upload-section-header {
+            background: var(--medical-primary);
+            color: var(--medical-white);
+            padding: var(--space-6);
+            border-bottom: 1px solid var(--medical-primary-dark);
+        }
+        
+        .medical-upload-section-title {
+            font-family: var(--font-secondary);
+            font-size: var(--text-xl);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .medical-upload-section-body {
+            padding: var(--space-8);
+        }
+        
+        .medical-upload-area {
+            border: 3px dashed var(--clinical-blue);
+            border-radius: var(--radius-xl);
+            padding: var(--space-12);
+            text-align: center;
+            background: var(--bg-medical);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .medical-upload-area:hover {
+            border-color: var(--medical-primary);
+            background: rgba(44, 82, 130, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .medical-upload-area.dragover {
+            border-color: var(--clinical-green);
+            background: rgba(72, 187, 120, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .medical-upload-icon {
+            font-size: var(--text-6xl);
+            color: var(--clinical-blue);
+            margin-bottom: var(--space-6);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .medical-upload-text h3 {
+            font-family: var(--font-secondary);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--medical-gray-800);
+            margin-bottom: var(--space-3);
+        }
+        
+        .medical-upload-text p {
+            color: var(--medical-gray-600);
+            margin-bottom: var(--space-6);
+        }
+        
+        .medical-image-preview {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: none;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+        }
+        
+        .medical-image-preview.active {
+            display: block;
+        }
+        
+        .medical-image-preview img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--radius-xl);
+        }
+        
+        .medical-preview-overlay {
+            position: absolute;
+            top: var(--space-4);
+            right: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+        }
+        
+        .medical-preview-btn {
+            background: var(--medical-white);
+            color: var(--medical-primary);
+            border: 1px solid var(--medical-gray-200);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: var(--text-sm);
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+        
+        .medical-preview-btn:hover {
+            background: var(--medical-primary);
+            color: var(--medical-white);
+            transform: translateY(-2px);
+        }
+        
+        .medical-camera-section {
+            margin-top: var(--space-8);
+        }
+        
+        .medical-camera-ui {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-6);
+            padding: var(--space-6);
+            background: var(--medical-gray-50);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--medical-gray-200);
+        }
+        
+        .medical-camera-ui.active {
+            display: flex;
+        }
+        
+        .medical-camera-video-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            background: var(--medical-gray-800);
+        }
+        
+        .medical-camera-ui video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .medical-camera-controls {
+            display: flex;
+            gap: var(--space-4);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .medical-camera-btn {
+            background: var(--medical-primary);
+            color: var(--medical-white);
+            border: none;
+            padding: var(--space-3) var(--space-6);
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .medical-camera-btn:hover {
+            background: var(--medical-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .medical-camera-btn.secondary {
+            background: var(--medical-white);
+            color: var(--medical-primary);
+            border: 2px solid var(--medical-primary);
+        }
+        
+        .medical-camera-btn.secondary:hover {
+            background: var(--medical-primary);
+            color: var(--medical-white);
+        }
+        
+        .medical-actions {
+            display: flex;
+            gap: var(--space-4);
+            justify-content: center;
+            margin-top: var(--space-8);
+            flex-wrap: wrap;
+        }
+        
+        .medical-analysis-btn {
+            background: var(--clinical-green);
+            color: var(--medical-white);
+            border: none;
+            padding: var(--space-4) var(--space-8);
+            border-radius: var(--radius-xl);
+            font-family: var(--font-secondary);
+            font-size: var(--text-lg);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .medical-analysis-btn:hover {
+            background: #38a169;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .medical-analysis-btn:disabled {
+            background: var(--medical-gray-400);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .medical-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .medical-loading-overlay.active {
+            display: flex;
+        }
+        
+        .medical-loading-content {
+            text-align: center;
+            color: var(--medical-white);
+            max-width: 400px;
+            padding: var(--space-8);
+        }
+        
+        .medical-loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid var(--clinical-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--space-6);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .medical-loading-title {
+            font-family: var(--font-secondary);
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+        }
+        
+        .medical-loading-text {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: var(--space-6);
+        }
+        
+        .medical-loading-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin: var(--space-4) 0;
+        }
+        
+        .medical-loading-progress-fill {
+            height: 100%;
+            background: var(--clinical-green);
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: progressPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes progressPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .medical-loading-steps {
+            text-align: left;
+            margin-top: var(--space-4);
+        }
+        
+        .medical-loading-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-2);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: var(--text-sm);
+        }
+        
+        .medical-loading-step.active {
+            color: var(--clinical-green);
+        }
+        
+        .medical-loading-step.completed {
+            color: var(--medical-white);
+        }
+        
+        .medical-loading-step i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .medical-upload-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-8);
+            }
+            
+            .medical-upload-container {
+                padding: var(--space-4);
+            }
+            
+            .medical-upload-title {
+                font-size: var(--text-2xl);
+            }
+            
+            .medical-upload-area {
+                padding: var(--space-8);
+                min-height: 250px;
+            }
+            
+            .medical-upload-icon {
+                font-size: var(--text-4xl);
+            }
+            
+            .medical-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .medical-analysis-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body class="medical-dashboard-page">
+
+    <!-- Medical Header -->
+    <header class="medical-header">
+        <div class="medical-header-container">
+            <a href="index.html" class="medical-logo">
+                <div class="medical-logo-icon">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <span>DermaAI</span>
+            </a>
+            
+            <nav class="medical-nav">
+                <a href="/" class="medical-nav-link">Home</a>
+                <a href="/upload" class="medical-nav-link active">Analysis</a>
+                <a href="#guidelines" class="medical-nav-link">Guidelines</a>
+                <a href="/login" class="medical-nav-link">Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Upload Content -->
+    <div class="medical-upload-container">
+        <!-- Upload Header -->
+        <div class="medical-upload-header">
+            <h1 class="medical-upload-title">Clinical Skin Analysis</h1>
+            <p class="medical-upload-subtitle">
+                Upload or capture a high-quality facial image for comprehensive AI-powered acne detection 
+                and classification. Our system analyzes multiple acne types with clinical-grade accuracy.
+            </p>
+        </div>
+
+        <!-- Clinical Guidelines -->
+        <div class="medical-guidelines" id="guidelines">
+            <h2 class="medical-guidelines-title">
+                <i class="fas fa-clipboard-check"></i>
+                Clinical Imaging Guidelines
+            </h2>
+            <div class="medical-guidelines-grid">
+                <div class="medical-guideline-item">
+                    <div class="medical-guideline-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="medical-guideline-text">
+                        <strong>Lighting</strong>
+                        Use bright, even lighting without shadows
+                    </div>
+                </div>
+                <div class="medical-guideline-item">
+                    <div class="medical-guideline-icon">
+                        <i class="fas fa-ruler"></i>
+                    </div>
+                    <div class="medical-guideline-text">
+                        <strong>Distance</strong>
+                        Maintain 12-18 inches from face
+                    </div>
+                </div>
+                <div class="medical-guideline-item">
+                    <div class="medical-guideline-icon">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <div class="medical-guideline-text">
+                        <strong>Framing</strong>
+                        Include full face, chin to forehead
+                    </div>
+                </div>
+                <div class="medical-guideline-item">
+                    <div class="medical-guideline-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <div class="medical-guideline-text">
+                        <strong>Preparation</strong>
+                        Clean face, avoid heavy makeup
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Grid -->
+        <div class="medical-upload-grid">
+            <!-- File Upload Section -->
+            <div class="medical-upload-section">
+                <div class="medical-upload-section-header">
+                    <h2 class="medical-upload-section-title">
+                        <i class="fas fa-upload"></i>
+                        Image Upload
+                    </h2>
+                </div>
+                <div class="medical-upload-section-body">
+                    <div class="medical-upload-area" id="uploadArea">
+                        <div class="medical-upload-content" id="uploadContent">
+                            <div class="medical-upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="medical-upload-text">
+                                <h3>Drop clinical image here</h3>
+                                <p>or click to browse from your device</p>
+                                <button class="medical-btn medical-btn-primary">
+                                    <i class="fas fa-folder-open"></i>
+                                    Choose File
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="medical-image-preview" id="imagePreview">
+                            <img id="previewImg" src="" alt="Clinical Image Preview">
+                            <div class="medical-preview-overlay">
+                                <button class="medical-preview-btn" id="changeImageBtn">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    Change
+                                </button>
+                                <button class="medical-preview-btn" id="removeImageBtn">
+                                    <i class="fas fa-trash"></i>
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    
+                    <!-- Camera Section -->
+                    <div class="medical-camera-section">
+                        <button class="medical-camera-btn" id="openCameraBtn">
+                            <i class="fas fa-camera"></i>
+                            Use Clinical Camera
+                        </button>
+                        
+                        <div class="medical-camera-ui" id="cameraUI">
+                            <div class="medical-camera-video-container">
+                                <video id="cameraVideo" autoplay playsinline></video>
+                            </div>
+                            <div class="medical-camera-controls">
+                                <button class="medical-camera-btn" id="captureBtn">
+                                    <i class="fas fa-camera"></i>
+                                    Capture Image
+                                </button>
+                                <button class="medical-camera-btn secondary" id="stopCameraBtn">
+                                    <i class="fas fa-stop"></i>
+                                    Stop Camera
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Options Section -->
+            <div class="medical-upload-section">
+                <div class="medical-upload-section-header">
+                    <h2 class="medical-upload-section-title">
+                        <i class="fas fa-cogs"></i>
+                        Analysis Options
+                    </h2>
+                </div>
+                <div class="medical-upload-section-body">
+                    <div class="medical-analysis-options">
+                        <div class="medical-card mb-6">
+                            <div class="medical-card-body">
+                                <h3 class="medical-card-title mb-4">Detection Types</h3>
+                                <div class="medical-detection-types">
+                                    <label class="medical-detection-type">
+                                        <input type="checkbox" checked>
+                                        <span class="acne-type-blackheads">Blackheads</span>
+                                    </label>
+                                    <label class="medical-detection-type">
+                                        <input type="checkbox" checked>
+                                        <span class="acne-type-whiteheads">Whiteheads</span>
+                                    </label>
+                                    <label class="medical-detection-type">
+                                        <input type="checkbox" checked>
+                                        <span class="acne-type-papules">Papules</span>
+                                    </label>
+                                    <label class="medical-detection-type">
+                                        <input type="checkbox" checked>
+                                        <span class="acne-type-pustules">Pustules</span>
+                                    </label>
+                                    <label class="medical-detection-type">
+                                        <input type="checkbox" checked>
+                                        <span class="acne-type-cysts">Cysts</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="medical-card mb-6">
+                            <div class="medical-card-body">
+                                <h3 class="medical-card-title mb-4">Analysis Settings</h3>
+                                <div class="medical-analysis-settings">
+                                    <div class="medical-setting-item">
+                                        <label class="medical-setting-label">
+                                            Confidence Threshold
+                                            <input type="range" min="0.5" max="0.95" step="0.05" value="0.7" id="confidenceThreshold">
+                                            <span id="confidenceValue">70%</span>
+                                        </label>
+                                    </div>
+                                    <div class="medical-setting-item">
+                                        <label class="medical-setting-label">
+                                            <input type="checkbox" checked>
+                                            Generate Detailed Report
+                                        </label>
+                                    </div>
+                                    <div class="medical-setting-item">
+                                        <label class="medical-setting-label">
+                                            <input type="checkbox" checked>
+                                            Include Recommendations
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="medical-card">
+                            <div class="medical-card-body">
+                                <h3 class="medical-card-title mb-4">Patient Information</h3>
+                                <div class="medical-patient-form">
+                                    <div class="medical-form-group">
+                                        <label class="medical-form-label">Patient ID (Optional)</label>
+                                        <input type="text" class="medical-form-input" placeholder="Enter patient ID">
+                                    </div>
+                                    <div class="medical-form-group">
+                                        <label class="medical-form-label">Age Range</label>
+                                        <select class="medical-form-select">
+                                            <option>Under 18</option>
+                                            <option>18-25</option>
+                                            <option>26-35</option>
+                                            <option>36-45</option>
+                                            <option>46-55</option>
+                                            <option>Over 55</option>
+                                        </select>
+                                    </div>
+                                    <div class="medical-form-group">
+                                        <label class="medical-form-label">Skin Type</label>
+                                        <select class="medical-form-select">
+                                            <option>Oily</option>
+                                            <option>Dry</option>
+                                            <option>Combination</option>
+                                            <option>Sensitive</option>
+                                            <option>Normal</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="medical-actions">
+            <button class="medical-analysis-btn" id="startAnalysisBtn" disabled>
+                <i class="fas fa-play"></i>
+                Start Clinical Analysis
+            </button>
+            <a href="index.html" class="medical-btn medical-btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Medical Loading Overlay -->
+    <div class="medical-loading-overlay" id="loadingOverlay">
+        <div class="medical-loading-content">
+            <div class="medical-loading-spinner"></div>
+            <h2 class="medical-loading-title">Analyzing Clinical Image</h2>
+            <p class="medical-loading-text">Our AI is processing your image and detecting acne patterns...</p>
+            <div class="medical-loading-progress">
+                <div class="medical-loading-progress-fill" id="progressFill"></div>
+            </div>
+            <div class="medical-loading-steps">
+                <div class="medical-loading-step" id="step1">
+                    <i class="fas fa-circle"></i>
+                    Preprocessing image...
+                </div>
+                <div class="medical-loading-step" id="step2">
+                    <i class="fas fa-circle"></i>
+                    Running detection algorithms...
+                </div>
+                <div class="medical-loading-step" id="step3">
+                    <i class="fas fa-circle"></i>
+                    Classifying acne types...
+                </div>
+                <div class="medical-loading-step" id="step4">
+                    <i class="fas fa-circle"></i>
+                    Generating clinical report...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Additional styles for form elements */
+        .medical-detection-types {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+        
+        .medical-detection-type {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            cursor: pointer;
+            padding: var(--space-2);
+            border-radius: var(--radius);
+            transition: background 0.2s ease;
+        }
+        
+        .medical-detection-type:hover {
+            background: var(--medical-gray-50);
+        }
+        
+        .medical-detection-type input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--medical-primary);
+        }
+        
+        .medical-analysis-settings {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+        
+        .medical-setting-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+        
+        .medical-setting-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            flex: 1;
+            cursor: pointer;
+        }
+        
+        .medical-setting-label input[type="range"] {
+            flex: 1;
+            accent-color: var(--medical-primary);
+        }
+        
+        .medical-setting-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--medical-primary);
+        }
+        
+        .medical-patient-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+        
+        .medical-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+        
+        .medical-form-label {
+            font-weight: 600;
+            color: var(--medical-gray-700);
+        }
+        
+        .medical-form-input,
+        .medical-form-select {
+            padding: var(--space-3);
+            border: 1px solid var(--medical-gray-300);
+            border-radius: var(--radius);
+            font-family: var(--font-primary);
+            font-size: var(--text-base);
+            transition: border-color 0.2s ease;
+        }
+        
+        .medical-form-input:focus,
+        .medical-form-select:focus {
+            outline: none;
+            border-color: var(--medical-primary);
+            box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
+        }
+        
+        /* Enhanced Acne Type Indicators */
+        .acne-type-blackheads {
+            background: var(--acne-blackheads-gradient);
+            color: var(--medical-white);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(30, 41, 59, 0.3);
+            border: 2px solid var(--acne-blackheads);
+            transition: all 0.3s ease;
+        }
+        
+        .acne-type-whiteheads {
+            background: var(--acne-whiteheads-gradient);
+            color: var(--medical-gray-800);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(203, 213, 225, 0.3);
+            border: 2px solid var(--medical-gray-300);
+            transition: all 0.3s ease;
+        }
+        
+        .acne-type-papules {
+            background: var(--acne-papules-gradient);
+            color: var(--medical-white);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+            border: 2px solid var(--acne-papules);
+            transition: all 0.3s ease;
+        }
+        
+        .acne-type-pustules {
+            background: var(--acne-pustules-gradient);
+            color: var(--medical-white);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            border: 2px solid var(--acne-pustules);
+            transition: all 0.3s ease;
+        }
+        
+        .acne-type-cysts {
+            background: var(--acne-cysts-gradient);
+            color: var(--medical-white);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            border: 2px solid var(--acne-cysts);
+            transition: all 0.3s ease;
+        }
+        
+        .acne-type-blackheads:hover,
+        .acne-type-whiteheads:hover,
+        .acne-type-papules:hover,
+        .acne-type-pustules:hover,
+        .acne-type-cysts:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+
+    <script>
+        // Elements
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadContent = document.getElementById('uploadContent');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const fileInput = document.getElementById('fileInput');
+        const openCameraBtn = document.getElementById('openCameraBtn');
+        const cameraUI = document.getElementById('cameraUI');
+        const cameraVideo = document.getElementById('cameraVideo');
+        const captureBtn = document.getElementById('captureBtn');
+        const stopCameraBtn = document.getElementById('stopCameraBtn');
+        const startAnalysisBtn = document.getElementById('startAnalysisBtn');
+        const changeImageBtn = document.getElementById('changeImageBtn');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const progressFill = document.getElementById('progressFill');
+        const confidenceThreshold = document.getElementById('confidenceThreshold');
+        const confidenceValue = document.getElementById('confidenceValue');
+
+        let stream = null;
+        let currentImage = null;
+
+        // Confidence threshold slider
+        confidenceThreshold.addEventListener('input', (e) => {
+            confidenceValue.textContent = Math.round(e.target.value * 100) + '%';
+        });
+
+        // Upload area click
+        uploadArea.addEventListener('click', (e) => {
+            if (!imagePreview.classList.contains('active')) {
+                fileInput.click();
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleImageFile(file);
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                handleImageFile(files[0]);
+            }
+        });
+
+        // Handle image file
+        function handleImageFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentImage = e.target.result;
+                showImagePreview(currentImage);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Show image preview
+        function showImagePreview(imageSrc) {
+            previewImg.src = imageSrc;
+            uploadContent.style.display = 'none';
+            imagePreview.classList.add('active');
+            uploadArea.classList.add('has-image');
+            startAnalysisBtn.disabled = false;
+            
+            // Stop camera if active
+            if (stream) {
+                stopCamera();
+            }
+        }
+
+        // Change image
+        changeImageBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Remove image
+        removeImageBtn.addEventListener('click', () => {
+            currentImage = null;
+            previewImg.src = '';
+            uploadContent.style.display = 'flex';
+            imagePreview.classList.remove('active');
+            uploadArea.classList.remove('has-image');
+            fileInput.value = '';
+            startAnalysisBtn.disabled = true;
+        });
+
+        // Camera functionality
+        openCameraBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }, 
+                    audio: false 
+                });
+                cameraVideo.srcObject = stream;
+                cameraUI.classList.add('active');
+                openCameraBtn.style.display = 'none';
+                
+                // Scroll to camera
+                cameraUI.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch (err) {
+                console.error('Camera access error:', err);
+                alert('Camera access denied or unavailable. Please use file upload instead.');
+            }
+        });
+
+        // Capture photo
+        captureBtn.addEventListener('click', () => {
+            if (!stream) return;
+            
+            const canvas = document.createElement('canvas');
+            const video = cameraVideo;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            currentImage = dataUrl;
+            showImagePreview(dataUrl);
+            stopCamera();
+        });
+
+        // Stop camera
+        stopCameraBtn.addEventListener('click', stopCamera);
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            cameraUI.classList.remove('active');
+            openCameraBtn.style.display = 'inline-flex';
+        }
+
+        // Start analysis
+        startAnalysisBtn.addEventListener('click', async () => {
+            if (!currentImage) {
+                alert('Please select or capture an image first.');
+                return;
+            }
+
+            // Show loading overlay
+            loadingOverlay.classList.add('active');
+            
+            // Simulate analysis steps
+            const steps = [
+                { id: 'step1', delay: 1000 },
+                { id: 'step2', delay: 2000 },
+                { id: 'step3', delay: 3000 },
+                { id: 'step4', delay: 4000 }
+            ];
+            
+            let currentStep = 0;
+            const stepInterval = setInterval(() => {
+                if (currentStep > 0) {
+                    const prevStep = document.getElementById(steps[currentStep - 1].id);
+                    prevStep.classList.remove('active');
+                    prevStep.classList.add('completed');
+                    prevStep.querySelector('i').className = 'fas fa-check-circle';
+                }
+                
+                if (currentStep < steps.length) {
+                    const step = document.getElementById(steps[currentStep].id);
+                    step.classList.add('active');
+                    step.querySelector('i').className = 'fas fa-spinner fa-spin';
+                    currentStep++;
+                } else {
+                    clearInterval(stepInterval);
+                    completeAnalysis();
+                }
+            }, 1000);
+
+            // Animate progress bar
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+            }, 200);
+
+            function completeAnalysis() {
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                
+                // Complete last step
+                const lastStep = document.getElementById(steps[steps.length - 1].id);
+                lastStep.classList.remove('active');
+                lastStep.classList.add('completed');
+                lastStep.querySelector('i').className = 'fas fa-check-circle';
+                
+                setTimeout(() => {
+                    performActualAnalysis();
+                }, 500);
+            }
+        });
+
+        async function performActualAnalysis() {
+            try {
+                // Convert image to blob
+                const response = await fetch(currentImage);
+                const blob = await response.blob();
+                const formData = new FormData();
+                formData.append('file', blob, 'clinical-upload.jpg');
+
+                const res = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    throw new Error('Analysis failed');
+                }
+
+                const data = await res.json();
+                
+                // Save results and redirect
+                localStorage.setItem('acne_results', JSON.stringify(data));
+                localStorage.setItem('acne_image', data.full_annotated_image);
+
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 500);
+
+            } catch (err) {
+                loadingOverlay.classList.remove('active');
+                alert('Error connecting to analysis server. Please try again.');
+                console.error('Analysis error:', err);
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && stream) {
+                stopCamera();
+            }
+            if (e.key === ' ' && stream) {
+                e.preventDefault();
+                captureBtn.click();
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (stream) {
+                stopCamera();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - AI Acne Detection</title>
+    
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Modern CSS -->
+    <link rel="stylesheet" href="style-modern.css">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* Dashboard specific styles */
+        :root {
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--light);
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .summary-card.mild::before { background: var(--success); }
+        .summary-card.moderate::before { background: var(--warning); }
+        .summary-card.severe::before { background: var(--danger); }
+
+        .summary-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            color: var(--light);
+        }
+
+        .summary-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--light);
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .summary-label {
+            color: rgba(248, 250, 252, 0.7);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .summary-change.positive {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .summary-change.negative {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Image Panel */
+        .image-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-badge {
+            background: var(--gradient);
+            color: var(--light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            min-height: 400px;
+        }
+
+        .result-image {
+            max-width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .image-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .image-control-btn {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .image-control-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Detection List */
+        .detections-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detections-list {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+            padding-right: 0.5rem;
+        }
+
+        .detections-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .detections-list::-webkit-scrollbar-track {
+            background: var(--glass);
+            border-radius: 3px;
+        }
+
+        .detections-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .detection-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .detection-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(5px);
+        }
+
+        .detection-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 0.5rem;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .detection-info {
+            flex: 1;
+        }
+
+        .detection-type {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 0.25rem;
+        }
+
+        .detection-confidence {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(248, 250, 252, 0.8);
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            max-width: 100px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
+
+        .detection-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .detection-action-btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: rgba(248, 250, 252, 0.7);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .detection-action-btn:hover {
+            background: var(--primary);
+            color: var(--light);
+            border-color: var(--primary);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Recommendations */
+        .recommendations-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendation-list {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient);
+            color: var(--light);
+            flex-shrink: 0;
+        }
+
+        .recommendation-content {
+            flex: 1;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: var(--light);
+            margin-bottom: 0.25rem;
+        }
+
+        .recommendation-text {
+            color: rgba(248, 250, 252, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Export Options */
+        .export-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .export-btn {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--light);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Severity Indicator */
+        .severity-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .severity-indicator.mild {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .severity-indicator.moderate {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .severity-indicator.severe {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .detection-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+            }
+            
+            .export-btn {
+                width: 100%;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.1) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark);
+            color: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body id="dashboard-page">
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-microscope"></i>
+            AI Acne Detection
+        </div>
+        <nav>
+            <a href="index-modern.html">Home</a>
+            <a href="upload-modern.html">Analyze</a>
+            <a href="dashboard-modern.html" class="active">Results</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <i class="fas fa-chart-line"></i>
+                Analysis Results
+            </div>
+            <div class="dashboard-actions">
+                <a href="/upload" class="btn">
+                    <i class="fas fa-redo"></i>
+                    New Analysis
+                </a>
+                <button class="btn ghost" onclick="shareResults()">
+                    <i class="fas fa-share"></i>
+                    Share
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fas fa-bug"></i>
+                </div>
+                <div class="summary-value" id="totalCount">0</div>
+                <div class="summary-label">Total Detections</div>
+                <div class="summary-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>Analyzed</span>
+                </div>
+            </div>
+            
+            <div class="summary-card" id="severityCard">
+                <div class="summary-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="summary-value" id="severityText">-</div>
+                <div class="summary-label">Severity Level</div>
+                <div class="severity-indicator" id="severityBadge">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Assessed</span>
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="summary-value" id="dominantType">-</div>
+                <div class="summary-label">Dominant Type</div>
+                <div class="summary-change positive">
+                    <i class="fas fa-check"></i>
+                    <span>Identified</span>
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="summary-value" id="avgConfidence">0%</div>
+                <div class="summary-label">Avg Confidence</div>
+                <div class="summary-change positive">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Reliable</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Image Panel -->
+            <div class="image-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fas fa-image"></i>
+                        Detection Mapping
+                    </div>
+                    <div class="panel-badge">AI Enhanced</div>
+                </div>
+                <div class="image-container">
+                    <img id="mainImage" src="" alt="Analysis Result" class="result-image">
+                </div>
+                <div class="image-controls">
+                    <button class="image-control-btn" onclick="toggleFullscreen()">
+                        <i class="fas fa-expand"></i>
+                        Fullscreen
+                    </button>
+                    <button class="image-control-btn" onclick="downloadImage()">
+                        <i class="fas fa-download"></i>
+                        Download
+                    </button>
+                    <button class="image-control-btn" onclick="resetZoom()">
+                        <i class="fas fa-search-minus"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detections Panel -->
+            <div class="detections-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="fas fa-list"></i>
+                        Detected Areas
+                    </div>
+                    <div class="panel-badge" id="detectionCount">0 items</div>
+                </div>
+                <div class="detections-list" id="detectionsList">
+                    <!-- Detections will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-panel">
+                <div class="panel-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Type Distribution
+                </div>
+                <div class="chart-container">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-panel">
+                <div class="panel-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Confidence Analysis
+                </div>
+                <div class="chart-container">
+                    <canvas id="confidenceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="recommendations-panel">
+            <div class="panel-title">
+                <i class="fas fa-lightbulb"></i>
+                Personalized Recommendations
+            </div>
+            <div class="recommendation-list" id="recommendationList">
+                <!-- Recommendations will be populated here -->
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="export-panel">
+            <div class="panel-title">
+                <i class="fas fa-file-export"></i>
+                Export Your Results
+            </div>
+            <div class="export-buttons">
+                <button class="export-btn" onclick="exportPDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    PDF Report
+                </button>
+                <button class="export-btn" onclick="exportJSON()">
+                    <i class="fas fa-file-code"></i>
+                    JSON Data
+                </button>
+                <button class="export-btn" onclick="printResults()">
+                    <i class="fas fa-print"></i>
+                    Print
+                </button>
+                <button class="export-btn" onclick="emailResults()">
+                    <i class="fas fa-envelope"></i>
+                    Email
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load results from localStorage
+        let results = null;
+        let typeChart = null;
+        let confidenceChart = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedResults = localStorage.getItem('acne_results');
+            if (!storedResults) {
+                showError('No analysis results found. Please run an analysis first.');
+                return;
+            }
+
+            results = JSON.parse(storedResults);
+            populateDashboard();
+            initializeCharts();
+            generateRecommendations();
+        });
+
+        function populateDashboard() {
+            // Update summary cards
+            document.getElementById('totalCount').textContent = results.total_count || 0;
+            document.getElementById('severityText').textContent = results.severity || '-';
+            document.getElementById('avgConfidence').textContent = calculateAverageConfidence() + '%';
+
+            // Update severity badge
+            const severityCard = document.getElementById('severityCard');
+            const severityBadge = document.getElementById('severityBadge');
+            
+            severityCard.className = 'summary-card ' + (results.severity?.toLowerCase() || '');
+            severityBadge.className = 'severity-indicator ' + (results.severity?.toLowerCase() || '');
+
+            // Update dominant type
+            const dominantType = getDominantType();
+            document.getElementById('dominantType').textContent = dominantType || '-';
+
+            // Update main image
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = results.full_annotated_image || '';
+
+            // Populate detections list
+            populateDetectionsList();
+
+            // Update detection count
+            document.getElementById('detectionCount').textContent = 
+                `${results.detections?.length || 0} items`;
+        }
+
+        function populateDetectionsList() {
+            const detectionsList = document.getElementById('detectionsList');
+            detectionsList.innerHTML = '';
+
+            if (!results.detections || results.detections.length === 0) {
+                detectionsList.innerHTML = '<div class="no-detections">No detections found</div>';
+                return;
+            }
+
+            results.detections.forEach((detection, index) => {
+                const detectionItem = document.createElement('div');
+                detectionItem.className = 'detection-item';
+                detectionItem.innerHTML = `
+                    <img src="${detection.crop}" alt="${detection.type}" class="detection-image">
+                    <div class="detection-info">
+                        <div class="detection-type">${detection.type}</div>
+                        <div class="detection-confidence">
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${detection.confidence * 100}%"></div>
+                            </div>
+                            <span>${(detection.confidence * 100).toFixed(1)}%</span>
+                        </div>
+                    </div>
+                    <div class="detection-actions">
+                        <button class="detection-action-btn" onclick="viewDetection(${index})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="detection-action-btn" onclick="highlightDetection(${index})">
+                            <i class="fas fa-crosshairs"></i>
+                        </button>
+                    </div>
+                `;
+                detectionsList.appendChild(detectionItem);
+            });
+        }
+
+        function calculateAverageConfidence() {
+            if (!results.detections || results.detections.length === 0) return 0;
+            
+            const totalConfidence = results.detections.reduce((sum, det) => sum + det.confidence, 0);
+            const average = totalConfidence / results.detections.length;
+            return Math.round(average * 100);
+        }
+
+        function getDominantType() {
+            if (!results.detections || results.detections.length === 0) return null;
+            
+            const typeCounts = {};
+            results.detections.forEach(det => {
+                typeCounts[det.type] = (typeCounts[det.type] || 0) + 1;
+            });
+            
+            return Object.keys(typeCounts).reduce((a, b) => 
+                typeCounts[a] > typeCounts[b] ? a : b
+            );
+        }
+
+        function initializeCharts() {
+            // Type Distribution Chart
+            const typeCtx = document.getElementById('typeChart').getContext('2d');
+            const typeData = getTypeDistribution();
+            
+            typeChart = new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(typeData),
+                    datasets: [{
+                        data: Object.values(typeData),
+                        backgroundColor: [
+                            '#6366f1',
+                            '#8b5cf6',
+                            '#ec4899',
+                            '#f59e0b',
+                            '#10b981'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#f8fafc',
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Confidence Analysis Chart
+            const confidenceCtx = document.getElementById('confidenceChart').getContext('2d');
+            const confidenceData = getConfidenceData();
+            
+            confidenceChart = new Chart(confidenceCtx, {
+                type: 'bar',
+                data: {
+                    labels: confidenceData.labels,
+                    datasets: [{
+                        label: 'Confidence %',
+                        data: confidenceData.values,
+                        backgroundColor: '#6366f1',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#f8fafc',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#f8fafc'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function getTypeDistribution() {
+            const distribution = {};
+            if (results.detections) {
+                results.detections.forEach(det => {
+                    distribution[det.type] = (distribution[det.type] || 0) + 1;
+                });
+            }
+            return distribution;
+        }
+
+        function getConfidenceData() {
+            if (!results.detections) return { labels: [], values: [] };
+            
+            return {
+                labels: results.detections.map((_, i) => `Detection ${i + 1}`),
+                values: results.detections.map(det => Math.round(det.confidence * 100))
+            };
+        }
+
+        function generateRecommendations() {
+            const recommendationList = document.getElementById('recommendationList');
+            const recommendations = getRecommendations();
+            
+            recommendationList.innerHTML = '';
+            recommendations.forEach(rec => {
+                const recItem = document.createElement('div');
+                recItem.className = 'recommendation-item';
+                recItem.innerHTML = `
+                    <div class="recommendation-icon">
+                        <i class="${rec.icon}"></i>
+                    </div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-title">${rec.title}</div>
+                        <div class="recommendation-text">${rec.text}</div>
+                    </div>
+                `;
+                recommendationList.appendChild(recItem);
+            });
+        }
+
+        function getRecommendations() {
+            const severity = results.severity?.toLowerCase() || 'mild';
+            const dominantType = getDominantType();
+            
+            const baseRecommendations = [
+                {
+                    icon: 'fas fa-hand-holding-medical',
+                    title: 'Consult a Dermatologist',
+                    text: 'For accurate diagnosis and personalized treatment plan, consult with a qualified dermatologist.'
+                },
+                {
+                    icon: 'fas fa-soap',
+                    title: 'Gentle Cleansing Routine',
+                    text: 'Use a gentle, non-comedogenic cleanser twice daily to remove excess oil and impurities.'
+                },
+                {
+                    icon: 'fas fa-tint',
+                    title: 'Stay Hydrated',
+                    text: 'Drink plenty of water and maintain a balanced diet rich in vitamins and antioxidants.'
+                }
+            ];
+
+            if (severity === 'severe') {
+                baseRecommendations.unshift({
+                    icon: 'fas fa-exclamation-triangle',
+                    title: 'Seek Professional Care',
+                    text: 'Severe acne requires immediate professional medical attention and treatment.'
+                });
+            }
+
+            if (dominantType === 'Cyst') {
+                baseRecommendations.push({
+                    icon: 'fas fa-pills',
+                    title: 'Avoid Squeezing',
+                    text: 'Cystic acne should never be squeezed as it can lead to scarring and infection.'
+                });
+            }
+
+            return baseRecommendations;
+        }
+
+        // Action Functions
+        function viewDetection(index) {
+            const detection = results.detections[index];
+            if (detection) {
+                window.open(detection.crop, '_blank');
+            }
+        }
+
+        function highlightDetection(index) {
+            // This would highlight the detection on the main image
+            // Implementation depends on how you want to handle highlighting
+            console.log('Highlighting detection:', index);
+        }
+
+        function toggleFullscreen() {
+            const img = document.getElementById('mainImage');
+            if (!document.fullscreenElement) {
+                img.requestFullscreen().catch(err => {
+                    console.error('Error attempting to enable fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.href = results.full_annotated_image;
+            link.download = 'acne-analysis-result.jpg';
+            link.click();
+        }
+
+        function resetZoom() {
+            const img = document.getElementById('mainImage');
+            img.style.transform = 'scale(1)';
+        }
+
+        function shareResults() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'AI Acne Detection Results',
+                    text: `I analyzed my skin with AI and found ${results.total_count} acne areas with ${results.severity} severity.`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback - copy to clipboard
+                const text = `AI Acne Detection Results:\nTotal: ${results.total_count}\nSeverity: ${results.severity}`;
+                navigator.clipboard.writeText(text);
+                alert('Results copied to clipboard!');
+            }
+        }
+
+        function exportPDF() {
+            // This would generate a PDF report
+            alert('PDF export feature coming soon!');
+        }
+
+        function exportJSON() {
+            const dataStr = JSON.stringify(results, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'acne-analysis-results.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function printResults() {
+            window.print();
+        }
+
+        function emailResults() {
+            const subject = 'AI Acne Detection Results';
+            const body = `I analyzed my skin with AI and found ${results.total_count} acne areas with ${results.severity} severity.`;
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <div class="error-content">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>${message}</p>
+                    <button onclick="window.location.href='upload-modern.html'">Run Analysis</button>
+                </div>
+            `;
+            document.querySelector('.dashboard-container').prepend(errorDiv);
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'p':
+                        e.preventDefault();
+                        printResults();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        exportJSON();
+                        break;
+                    case 'd':
+                        e.preventDefault();
+                        downloadImage();
+                        break;
+                }
+            }
+        });
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image - AI Acne Detection</title>
+    
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Modern CSS -->
+    <link rel="stylesheet" href="style-modern.css">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Upload page specific styles */
+        .upload-container {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .upload-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .upload-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .upload-header p {
+            color: rgba(248, 250, 252, 0.8);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .upload-area {
+            border: 3px dashed var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin: 2rem 0;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--accent);
+            background: rgba(236, 72, 153, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .upload-area.has-image {
+            padding: 0;
+            border-style: solid;
+            border-color: var(--primary);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .upload-text {
+            text-align: center;
+            color: var(--light);
+        }
+        
+        .upload-text h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-text p {
+            color: rgba(248, 250, 252, 0.7);
+            margin-bottom: 1rem;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: none;
+        }
+        
+        .image-preview.active {
+            display: block;
+        }
+        
+        .image-preview img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 1rem;
+        }
+        
+        .preview-overlay {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .preview-btn {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .preview-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .camera-section {
+            margin: 3rem 0;
+            text-align: center;
+        }
+        
+        .camera-ui {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+        }
+        
+        .camera-ui.active {
+            display: flex;
+        }
+        
+        .camera-video-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .camera-ui video {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #000;
+        }
+        
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .camera-btn {
+            background: var(--gradient);
+            color: var(--light);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .camera-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .camera-btn.secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .camera-btn.secondary:hover {
+            background: var(--primary);
+            color: var(--light);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .tips-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .tips-section h3 {
+            color: var(--light);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            color: rgba(248, 250, 252, 0.8);
+        }
+        
+        .tip-item i {
+            color: var(--accent);
+            margin-top: 0.2rem;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-content {
+            text-align: center;
+            color: var(--light);
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--glass-border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .loading-subtext {
+            color: rgba(248, 250, 252, 0.7);
+        }
+        
+        .progress-bar {
+            width: 300px;
+            height: 4px;
+            background: var(--glass-border);
+            border-radius: 2px;
+            margin: 1rem auto;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: progressPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes progressPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @media (max-width: 768px) {
+            .upload-container {
+                margin: 2rem auto;
+                padding: 0 1rem;
+            }
+            
+            .upload-header h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-area {
+                padding: 2rem;
+                min-height: 250px;
+            }
+            
+            .upload-icon {
+                font-size: 3rem;
+            }
+            
+            .camera-ui {
+                padding: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body id="upload-page">
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-microscope"></i>
+            AI Acne Detection
+        </div>
+        <nav>
+            <a href="index-modern.html">Home</a>
+            <a href="upload-modern.html" class="active">Analyze</a>
+            <a href="#tips">Tips</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="upload-container">
+        <div class="upload-header">
+            <h1>Advanced Skin Analysis</h1>
+            <p>Upload a clear facial image for comprehensive AI-powered acne detection and classification</p>
+        </div>
+
+        <!-- Upload Area -->
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-content" id="uploadContent">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">
+                    <h3>Drop your image here</h3>
+                    <p>or click to browse from your device</p>
+                    <button class="btn ghost">
+                        <i class="fas fa-folder-open"></i>
+                        Choose File
+                    </button>
+                </div>
+            </div>
+            
+            <div class="image-preview" id="imagePreview">
+                <img id="previewImg" src="" alt="Preview">
+                <div class="preview-overlay">
+                    <button class="preview-btn" id="changeImageBtn">
+                        <i class="fas fa-exchange-alt"></i>
+                        Change
+                    </button>
+                    <button class="preview-btn" id="removeImageBtn">
+                        <i class="fas fa-trash"></i>
+                        Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+        <!-- Camera Section -->
+        <div class="camera-section">
+            <button class="btn" id="openCameraBtn">
+                <i class="fas fa-camera"></i>
+                Use Camera
+            </button>
+            
+            <div class="camera-ui" id="cameraUI">
+                <div class="camera-video-container">
+                    <video id="cameraVideo" autoplay playsinline></video>
+                </div>
+                <div class="camera-controls">
+                    <button class="camera-btn" id="captureBtn">
+                        <i class="fas fa-camera"></i>
+                        Capture Photo
+                    </button>
+                    <button class="camera-btn secondary" id="stopCameraBtn">
+                        <i class="fas fa-stop"></i>
+                        Stop Camera
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn" id="startAnalysisBtn">
+                <i class="fas fa-play"></i>
+                Start Analysis
+            </button>
+            <a href="index-modern.html" class="btn ghost">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-section" id="tips">
+            <h3>
+                <i class="fas fa-lightbulb"></i>
+                Tips for Best Results
+            </h3>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <i class="fas fa-sun"></i>
+                    <span>Use natural, even lighting</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Keep camera parallel to face</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-search"></i>
+                    <span>Ensure face is clearly visible</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-ruler"></i>
+                    <span>Maintain 12-18 inch distance</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-tint"></i>
+                    <span>Avoid heavy makeup or filters</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-expand"></i>
+                    <span>Include full face in frame</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Analyzing your image...</div>
+            <div class="loading-subtext">Our AI is detecting and classifying acne types</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadContent = document.getElementById('uploadContent');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const fileInput = document.getElementById('fileInput');
+        const openCameraBtn = document.getElementById('openCameraBtn');
+        const cameraUI = document.getElementById('cameraUI');
+        const cameraVideo = document.getElementById('cameraVideo');
+        const captureBtn = document.getElementById('captureBtn');
+        const stopCameraBtn = document.getElementById('stopCameraBtn');
+        const startAnalysisBtn = document.getElementById('startAnalysisBtn');
+        const changeImageBtn = document.getElementById('changeImageBtn');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const progressFill = document.getElementById('progressFill');
+
+        let stream = null;
+        let currentImage = null;
+
+        // Upload area click
+        uploadArea.addEventListener('click', (e) => {
+            if (!imagePreview.classList.contains('active')) {
+                fileInput.click();
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleImageFile(file);
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                handleImageFile(files[0]);
+            }
+        });
+
+        // Handle image file
+        function handleImageFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentImage = e.target.result;
+                showImagePreview(currentImage);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Show image preview
+        function showImagePreview(imageSrc) {
+            previewImg.src = imageSrc;
+            uploadContent.style.display = 'none';
+            imagePreview.classList.add('active');
+            uploadArea.classList.add('has-image');
+            
+            // Stop camera if active
+            if (stream) {
+                stopCamera();
+            }
+        }
+
+        // Change image
+        changeImageBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Remove image
+        removeImageBtn.addEventListener('click', () => {
+            currentImage = null;
+            previewImg.src = '';
+            uploadContent.style.display = 'flex';
+            imagePreview.classList.remove('active');
+            uploadArea.classList.remove('has-image');
+            fileInput.value = '';
+        });
+
+        // Camera functionality
+        openCameraBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }, 
+                    audio: false 
+                });
+                cameraVideo.srcObject = stream;
+                cameraUI.classList.add('active');
+                openCameraBtn.style.display = 'none';
+                
+                // Scroll to camera
+                cameraUI.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch (err) {
+                console.error('Camera access error:', err);
+                alert('Camera access denied or unavailable. Please use file upload instead.');
+            }
+        });
+
+        // Capture photo
+        captureBtn.addEventListener('click', () => {
+            if (!stream) return;
+            
+            const canvas = document.createElement('canvas');
+            const video = cameraVideo;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            currentImage = dataUrl;
+            showImagePreview(dataUrl);
+            stopCamera();
+        });
+
+        // Stop camera
+        stopCameraBtn.addEventListener('click', stopCamera);
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            cameraUI.classList.remove('active');
+            openCameraBtn.style.display = 'inline-flex';
+        }
+
+        // Start analysis
+        startAnalysisBtn.addEventListener('click', async () => {
+            if (!currentImage) {
+                alert('Please select or capture an image first.');
+                return;
+            }
+
+            // Show loading overlay
+            loadingOverlay.classList.add('active');
+            
+            // Animate progress bar
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+            }, 200);
+
+            try {
+                // Convert image to blob
+                const response = await fetch(currentImage);
+                const blob = await response.blob();
+                const formData = new FormData();
+                formData.append('file', blob, 'upload.jpg');
+
+                const res = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!res.ok) {
+                    throw new Error('Analysis failed');
+                }
+
+                const data = await res.json();
+
+                // Complete progress
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                
+                // Save results and redirect
+                localStorage.setItem('acne_results', JSON.stringify(data));
+                localStorage.setItem('acne_image', currentImage);
+
+                setTimeout(() => {
+                    window.location.href = 'dashboard-modern.html';
+                }, 500);
+
+            } catch (err) {
+                clearInterval(progressInterval);
+                loadingOverlay.classList.remove('active');
+                alert('Error connecting to analysis server. Please try again.');
+                console.error('Analysis error:', err);
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && stream) {
+                stopCamera();
+            }
+            if (e.key === ' ' && stream) {
+                e.preventDefault();
+                captureBtn.click();
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (stream) {
+                stopCamera();
+            }
+        });
+    </script>
+</body>
+</html>
