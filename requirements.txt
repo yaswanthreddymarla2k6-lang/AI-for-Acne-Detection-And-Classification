@@ -16,8 +16,8 @@ PyJWT==2.8.0
 Werkzeug==2.3.7
 
 # Image Processing & ML
-torch==2.0.1
-torchvision==0.15.2
+torch==2.9.0
+torchvision==0.24.0
 efficientnet-pytorch==0.7.1
 opencv-python==4.8.1.78
 ultralytics==8.0.196
